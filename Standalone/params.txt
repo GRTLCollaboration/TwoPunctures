@@ -1,0 +1,39 @@
+verbosity = 1
+
+### Two Punctures params
+
+# Main BH params
+# Either calculate target masses or set bare masses explicitly below
+#TP_calculate_target_masses = true
+#TP_target_mass_plus = 1.0
+#TP_target_mass_minus = 0.5
+#TP_adm_tol = 1e-10
+TP_mass_plus = 0.9773790195003562
+TP_mass_minus = 0.4758625198306865
+# offset in x direction (or z if TP_swap_xz set true)
+TP_offset_plus = 4.020104682262776
+TP_offset_minus = -8.040209364525554
+#TP_swap_xz = false
+TP_momentum_plus = 0.0 0.15 0.0
+TP_momentum_minus = 0.0 -0.15 0.0
+TP_spin_plus = 0.0 0.0 0.0
+TP_spin_minus = 0.0 0.0 0.0
+
+# Solver params
+#TP_npoints_A = 30
+#TP_npoints_B = 30
+#TP_npoints_phi = 16;
+#TP_Newton_tol = 1e-10
+#TP_Newton_maxit = 5
+TP_epsilon = 1e-6
+#TP_Tiny = 0.0
+#TP_Extend_Radius = 0.0
+
+# Initial data params
+TP_use_spectral_interpolation = true
+TP_initial_lapse = psi^n
+TP_initial_lapse_psi_exponent = -2.0
+
+# Debug output
+#TP_do_residuum_debug_output = false
+#TP_do_initial_debug_output = false
