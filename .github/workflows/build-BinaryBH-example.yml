@@ -1,6 +1,9 @@
-name: Run GRChombo Tests (GCC)
+name: Build BinaryBH example with TwoPunctures
 
-on: [push]
+on:
+  schedule:
+    # Run once per month
+    - cron:  '0 0 1 * *'
 
 jobs:
   build-BinaryBH-example:

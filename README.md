@@ -1,5 +1,8 @@
 # TwoPunctures (GRChombo)
 
+![Build BinaryBH example with TwoPunctures](https://github.com/GRChombo/TwoPunctures/workflows/Build%20BinaryBH%20example%20with%20TwoPunctures/badge.svg)
+![Check Clang Format](https://github.com/GRChombo/TwoPunctures/workflows/Check%20Clang%20Format/badge.svg)
+
 This repository originates from the
 [standalone TwoPunctures](https://bitbucket.org/relastro/twopunctures-standalone)
 code which in turn comes from the original Einstein Toolkit thorn
