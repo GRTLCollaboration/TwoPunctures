@@ -1,6 +1,7 @@
 name: Build BinaryBH example with TwoPunctures
 
 on:
+  push: 
   schedule:
     # Run once per month
     - cron:  '0 0 1 * *'
