@@ -364,7 +364,7 @@ void TwoPunctures::F_of_v(int nvar, int n1, int n2, int n3, derivs v, double *F,
     {
         fclose(debugfile);
     }
-    free(sources);
+    delete[] sources;
     free_dvector(values, 0, nvar - 1);
     free_derivs(&U, nvar);
 }
