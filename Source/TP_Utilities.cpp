@@ -149,26 +149,28 @@ double ***d3tensor(long nrl, long nrh, long ncl, long nch, long ndl, long ndh)
 
 /*--------------------------------------------------------------------------*/
 void free_ivector(int *v, long nl, long nh)
-/* free an int vector allocated with ivector() */ { free(v + nl); }
+/* free an int vector allocated with ivector() */ { delete[](v + nl); }
 
 /*--------------------------------------------------------------------------*/
 void free_dvector(double *v, long nl, long nh)
-/* free an double vector allocated with dvector() */ { free(v + nl); }
+/* free an double vector allocated with dvector() */ { delete[](v + nl); }
 
 /*--------------------------------------------------------------------------*/
 void free_imatrix(int **m, long nrl, long nrh, long ncl, long nch)
 /* free an int matrix allocated by imatrix() */
 {
-    free(m[nrl] + ncl);
-    free(m + nrl);
+    for (int irow = nrl; irow <= nrh; ++irow)
+        delete[](m[irow] + ncl);
+    delete[](m + nrl);
 }
 
 /*--------------------------------------------------------------------------*/
 void free_dmatrix(double **m, long nrl, long nrh, long ncl, long nch)
 /* free a double matrix allocated by dmatrix() */
 {
-    free(m[nrl] + ncl);
-    free(m + nrl);
+    for (int irow = nrl; irow <= nrh; ++irow)
+        delete[](m[irow] + ncl);
+    delete[](m + nrl);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -176,9 +178,15 @@ void free_d3tensor(double ***t, long nrl, long nrh, long ncl, long nch,
                    long ndl, long ndh)
 /* free a double d3tensor allocated by d3tensor() */
 {
-    free(t[nrl][ncl] + ndl);
-    free(t[nrl] + ncl);
-    free(t + nrl);
+    for (int irow = nrl; irow <= nrh; ++irow)
+    {
+        for (int icol = ncl; icol <= nch; ++icol)
+        {
+            delete[](t[irow][icol] + ndl);
+        }
+        delete[](t[irow] + ncl);
+    }
+    delete[](t + nrl);
 }
 
 /*--------------------------------------------------------------------------*/
