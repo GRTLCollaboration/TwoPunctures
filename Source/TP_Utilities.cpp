@@ -159,8 +159,7 @@ void free_dvector(double *v, long nl, long nh)
 void free_imatrix(int **m, long nrl, long nrh, long ncl, long nch)
 /* free an int matrix allocated by imatrix() */
 {
-    for (int irow = nrl; irow <= nrh; ++irow)
-        delete[](m[irow] + ncl);
+    delete[](m[nrl] + ncl);
     delete[](m + nrl);
 }
 
@@ -168,8 +167,7 @@ void free_imatrix(int **m, long nrl, long nrh, long ncl, long nch)
 void free_dmatrix(double **m, long nrl, long nrh, long ncl, long nch)
 /* free a double matrix allocated by dmatrix() */
 {
-    for (int irow = nrl; irow <= nrh; ++irow)
-        delete[](m[irow] + ncl);
+    delete[](m[nrl] + ncl);
     delete[](m + nrl);
 }
 
@@ -178,14 +176,8 @@ void free_d3tensor(double ***t, long nrl, long nrh, long ncl, long nch,
                    long ndl, long ndh)
 /* free a double d3tensor allocated by d3tensor() */
 {
-    for (int irow = nrl; irow <= nrh; ++irow)
-    {
-        for (int icol = ncl; icol <= nch; ++icol)
-        {
-            delete[](t[irow][icol] + ndl);
-        }
-        delete[](t[irow] + ncl);
-    }
+    delete[](t[nrl][ncl] + ndl);
+    delete[](t[nrl] + ncl);
     delete[](t + nrl);
 }
 
