@@ -1,14 +1,14 @@
 name: Build BinaryBH example with TwoPunctures
 
 on:
-  push: 
+  push:
   schedule:
     # Run once per month
     - cron:  '0 0 1 * *'
 
 jobs:
   build-BinaryBH-example:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       CHOMBO_HOME: ${{ github.workspace }}/Chombo/lib
       TWOPUNCTURES_SOURCE: ${{ github.workspace }}/TwoPunctures/Source
@@ -16,32 +16,26 @@ jobs:
 
     steps:
     - name: Checkout Chombo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
       with:
         repository: GRChombo/Chombo
         path: Chombo
 
     - name: Checkout GRChombo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
       with:
         repository: GRChombo/GRChombo
         path: GRChombo
 
     - name: Checkout TwoPunctures
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
       with:
         path: TwoPunctures
 
     - name: Install Chombo dependencies
       run: |
         sudo apt-get update
-        sudo apt-get -y --no-install-recommends install csh gfortran-10 g++-10 cpp-10 libhdf5-dev libhdf5-openmpi-dev openmpi-bin libblas-dev liblapack-dev libgetopt-complete-perl
-
-    - name: Set Compilers
-      run: |
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100
-        sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-10 100
-        sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-10 100
+        sudo apt-get -y --no-install-recommends install csh libhdf5-dev libhdf5-openmpi-dev openmpi-bin libblas-dev liblapack-dev libgetopt-complete-perl
 
     - name: Build Chombo
       run: |
