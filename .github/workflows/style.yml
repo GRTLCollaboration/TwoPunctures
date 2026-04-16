@@ -1,0 +1,38 @@
+name: Style
+
+on: push
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpp-linter:
+    name: clang-format
+    runs-on: ubuntu-latest
+    env:
+      LLVM_VERSION: '19'
+
+    steps:
+    - name: Checkout TwoPunctures
+      uses: actions/checkout@v6
+
+
+    - name: Run clang-format on modified files
+      uses: cpp-linter/cpp-linter-action@v2
+      id: linter
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        style: 'file' # Clang-Format style
+        tidy-checks: '-*' # Don't run clang-tidy
+        version: ${{ env.LLVM_VERSION }}
+        files-changed-only: true
+        lines-changed-only: false
+        # Write a comment to the PR with the output
+        step-summary: 'true' # Print output in the worflow job summary
+
+    - name: Fail job if checks fail
+      if: steps.linter.outputs.checks-failed > 0
+      run: exit 1
+
