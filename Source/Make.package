@@ -1,0 +1,12 @@
+CEXE_sources += CoordTransf.cpp \
+                Equations.cpp \
+                FuncAndJacobian.cpp \
+                Newton.cpp \
+                TP_Parameters.cpp \
+                TP_Utilities.cpp \
+                TwoPunctures.cpp
+
+CEXE_headers += TP_ConservedVectorNames.hpp \
+                TP_Parameters.hpp \
+                TP_Utilities.hpp \
+                TwoPunctures.hpp
