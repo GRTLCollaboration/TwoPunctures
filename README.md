@@ -1,4 +1,4 @@
-# TwoPunctures (GRChombo)
+# TwoPunctures (GRChombo/GRTeclyn)
 
 ![Build BinaryBH example with TwoPunctures](https://github.com/GRChombo/TwoPunctures/workflows/Build%20BinaryBH%20example%20with%20TwoPunctures/badge.svg)
 ![Style](https://github.com/GRChombo/TwoPunctures/workflows/Style/badge.svg)
@@ -8,7 +8,9 @@ This repository originates from the
 code which in turn comes from the original Einstein Toolkit thorn
 [TwoPunctures](https://bitbucket.org/einsteintoolkit/einsteininitialdata/).
 
-It has been modified to allow integration with GRChombo.
+It has been modified to allow integration with
+[GRChombo](https://github.com/GRTLCollaboration/GRChombo) and
+[GRTeclyn](https://github.com/GRTLCollaboration/GRTeclyn).
 
 ##  Physics
 
@@ -32,6 +34,35 @@ the `GRCHOMBO_SOURCE` environment variable must be set to the Source
 subdirectory of the GRChombo repository.
 
 In either case linking with the GNU Scientific Library (GSL) is required.
+
+## GRTeclyn integration
+
+To build the BinaryBH GRTeclyn example with TwoPunctures initial data, set the
+makefile variable `USE_TWOPUNCTURES = TRUE`. By default, the build system will
+assume this repository is cloned next to GRTeclyn i.e.
+`/path/to/GRTeclyn/../TwoPunctures` (like AMReX) but this can be overridden by
+setting the `TWOPUNCTURES_HOME` variable. Both of these variables can be set in
+the following ways:
+
+* on the command line e.g.
+  ```
+  make -j 4 USE_TWOPUNCTURES=TRUE TWOPUNCTURES_HOME=/path/to/TwoPunctures
+  ```
+* in the `Make.local-pre` or `Make.local` files located in `amrex/Tools/GNUMake`
+* by setting it as an environment variable
+
+As for GRChombo, it requires linking with the GNU Scientific Library (GSL). If
+necessary, the GSL install location can be passed to the build system by setting
+`GSL_HOME`.
+
+> [!NOTE]
+> TwoPunctures parameter names differ between GRChombo and GRTeclyn.
+
+> [!NOTE]
+> When running GRTeclyn on GPUs, TwoPunctures will still run and
+> interpolate the data onto the grid on the CPU. In this case, since you will
+> generally have a much greater number of cells per MPI process, spectral
+> interpolation will be *very* slow.
 
 ## License
 
