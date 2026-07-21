@@ -1,6 +1,7 @@
 # TwoPunctures (GRChombo/GRTeclyn)
 
-![Build BinaryBH example with TwoPunctures](https://github.com/GRChombo/TwoPunctures/workflows/Build%20BinaryBH%20example%20with%20TwoPunctures/badge.svg)
+[![GRChombo](https://github.com/GRTLCollaboration/TwoPunctures/actions/workflows/grchombo.yml/badge.svg)](https://github.com/GRTLCollaboration/TwoPunctures/actions/workflows/grchombo.yml)
+[![GRTeclyn](https://github.com/GRTLCollaboration/TwoPunctures/actions/workflows/grteclyn.yml/badge.svg)](https://github.com/GRTLCollaboration/TwoPunctures/actions/workflows/grteclyn.yml)
 ![Style](https://github.com/GRChombo/TwoPunctures/workflows/Style/badge.svg)
 
 This repository originates from the
