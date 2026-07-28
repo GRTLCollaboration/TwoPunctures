@@ -1,0 +1,44 @@
+name: GRTeclyn
+
+on:
+  push:
+  schedule:
+    # Run once per month
+    - cron: "0 0 1 * *"
+
+jobs:
+  build:
+    name: Build BinaryBH example with TwoPunctures
+    runs-on: ubuntu-24.04
+    env:
+      OMP_NUM_THREADS: 1
+
+    steps:
+      - name: Checkout AMReX
+        uses: actions/checkout@v6
+        with:
+          repository: AMReX-Codes/amrex
+          path: amrex
+
+      - name: Checkout GRTeclyn
+        uses: actions/checkout@v6
+        with:
+          repository: GRTLCollaboration/GRTeclyn
+          path: GRTeclyn
+
+      - name: Checkout TwoPunctures
+        uses: actions/checkout@v6
+        with:
+          path: TwoPunctures
+
+      - name: Install GRTeclyn dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y --no-install-recommends install \
+            libopenmpi-dev \
+            libgsl-dev
+
+      - name: Build BinaryBH example with TwoPunctures
+        run: |
+          make -j 4 USE_TWOPUNCTURES=TRUE
+        working-directory: ${{ github.workspace }}/GRTeclyn/Examples/BinaryBH

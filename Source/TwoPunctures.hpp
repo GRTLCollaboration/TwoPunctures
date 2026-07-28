@@ -2,10 +2,23 @@
 #ifndef __TWO_PUNCTURES_MAIN__
 #define __TWO_PUNCTURES_MAIN__
 
+#ifdef CH_SPACEDIM
+#define USE_CHOMBO
+#elif defined(AMREX_SPACEDIM)
+#define USE_AMREX
+#endif
+
+#ifdef USE_CHOMBO
 // Chombo includes
 #include "MayDay.H"
 #include "SPMD.H"
 #include "parstream.H"
+#elif defined(USE_AMREX)
+// AMReX includes
+#include "AMReX.H"
+#include "AMReX_ParallelDescriptor.H"
+#include "AMReX_Print.H"
+#endif
 
 // Our includes
 #include "TP_ConservedVectorNames.hpp"
@@ -13,8 +26,10 @@
 #include "TP_Utilities.hpp"
 #include <cstdio>
 
+#ifdef USE_CHOMBO
 // Chombo namespace
 #include "UsingNamespace.H"
+#endif
 
 namespace TP
 {
@@ -29,6 +44,7 @@ namespace TP
 **/
 #define TP_RESTRICT __restrict__
 
+#ifdef USE_CHOMBO
 /* Give MPI information about rank */
 inline int TP_MyProc() { return procID(); }
 
@@ -41,6 +57,20 @@ inline int TP_MyProc() { return procID(); }
     }
 #define TP_ERROR MayDay::Error
 #define TP_WARN MayDay::Warning
+#elif defined(USE_AMREX)
+/* Give MPI information about rank */
+inline int TP_MyProc() { return amrex::ParallelDescriptor::MyProc(); }
+
+#define TP_INFO(args...)                                                       \
+    {                                                                          \
+        amrex::Print() << "TP: ";                                              \
+        char buf[1024];                                                        \
+        sprintf(buf, args);                                                    \
+        amrex::Print() << buf << std::endl;                                    \
+    }
+#define TP_ERROR amrex::Error
+#define TP_WARN amrex::Warning
+#endif
 
 /* end of quick adaptions */
 
