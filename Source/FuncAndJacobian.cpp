@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <vector>
 
 namespace TP
 {
@@ -865,54 +866,94 @@ double TwoPunctures::PunctIntPolAtArbitPosition(int ivar, int nvar, int n1,
 /// Fast Spectral Interpolation Routine Stuff
 //////////////////////////////////////////////////////
 
-/* Calculates the value of v at an arbitrary position (A,B,phi)* using the fast
+/* Calculates the value of v at an arbitrary position (A,B,phi) using the fast
  * routine */
 double TwoPunctures::PunctEvalAtArbitPositionFast(double *v, int ivar, double A,
                                                   double B, double phi,
                                                   int nvar, int n1, int n2,
                                                   int n3) const
 {
-    TP_TIME("TP::TwoPunctures::PunctEvalAtArbitPositionFast");
-    int i, j, k, N;
-    double *p, *values1, **values2, result;
-    // VASILIS: Nothing should be changed in this routine. This is used by
-    // PunctIntPolAtArbitPositionFast
+    /* Evaluate the tensor-product spectral expansion
+         v(A,B,phi) = sum_{i,j,k} c[i,j,k] * T_i(A) * T_j(B) * E_k(phi)
+       by contracting one index at a time (i, then j, then k). This is
+       mathematically equivalent to, but much cheaper than, calling
+       chebev() once per (j,k) pair followed by fourev(): the basis
+       functions are evaluated once per point instead of once per
+       coefficient line, the innermost contraction is contiguous in
+       memory (and hence vectorizable), and no Clenshaw recursion chains
+       serialise the computation.
+       The basis conventions match those of chebev() and fourev():
+         - T_n are Chebyshev polynomials and the n=0 term carries a
+           factor of 1/2 (chebev's 0.5*c[0] contribution),
+         - E_k(phi) is the Fourier basis used by fourev():
+               E_0     = 1/2,
+               E_l     = cos(l*phi)   for 1 <= l < M,
+               E_M     = cos(M*phi)/2,
+               E_{M+l} = sin(l*phi)   for 1 <= l < M,
+           with M = n3/2. */
 
-    N = maximum3(n1, n2, n3);
+    /* Thread-local scratch: avoids the per-call dvector/dmatrix
+       (de)allocations of the previous implementation and makes the
+       routine safe to call from multiple threads (e.g. OpenMP). */
+    thread_local static std::vector<double> TA, TB, E, tmp, t;
+    TA.resize(n1);
+    TB.resize(n2);
+    E.resize(n3);
+    tmp.resize(static_cast<std::size_t>(n2) * n3);
+    t.resize(n3);
 
-    p = dvector(0, N);
-    values1 = dvector(0, N);
-    values2 = dmatrix(0, N, 0, N);
+    /* Chebyshev bases in A and B: first generate the standard
+       recurrence T_0 = 1, T_1 = x, T_n = 2x*T_{n-1} - T_{n-2} (which
+       requires the unnormalised T_0), and only then fold chebev's
+       factor of 1/2 into the T_0 entry. */
+    TA[0] = 1.0;
+    if (n1 > 1)
+        TA[1] = A;
+    for (int i = 2; i < n1; i++)
+        TA[i] = 2.0 * A * TA[i - 1] - TA[i - 2];
+    TA[0] = 0.5;
 
-    for (k = 0; k < n3; k++)
+    TB[0] = 1.0;
+    if (n2 > 1)
+        TB[1] = B;
+    for (int j = 2; j < n2; j++)
+        TB[j] = 2.0 * B * TB[j - 1] - TB[j - 2];
+    TB[0] = 0.5;
+
+    /* Fourier basis in phi (fourev convention) */
+    const int M = n3 / 2;
+    E[0] = 0.5;
+    for (int l = 1; l < M; l++)
+        E[l] = cos(l * phi);
+    E[M] = 0.5 * cos(M * phi);
+    for (int l = 1; l < M; l++)
+        E[M + l] = sin(l * phi);
+
+    /* Contract the i index: tmp[j + n2*k] = sum_i c[i,j,k] * TA[i].
+       (i is the fastest-varying coefficient index in memory.) */
+    for (int jk = 0; jk < n2 * n3; jk++)
     {
-        for (j = 0; j < n2; j++)
-        {
-            for (i = 0; i < n1; i++)
-                p[i] = v[ivar + nvar * (i + n1 * (j + n2 * k))];
-            //      chebft_Zeros (p, n1, 0);
-            values2[j][k] = chebev(-1, 1, p, n1, A);
-        }
+        double sum = 0;
+        for (int i = 0; i < n1; i++)
+            sum += v[ivar + nvar * (i + n1 * jk)] * TA[i];
+        tmp[jk] = sum;
     }
 
-    for (k = 0; k < n3; k++)
+    /* Contract the j index: t[k] = sum_j tmp[j + n2*k] * TB[j] */
+    for (int k = 0; k < n3; k++)
     {
-        for (j = 0; j < n2; j++)
-            p[j] = values2[j][k];
-        //    chebft_Zeros (p, n2, 0);
-        values1[k] = chebev(-1, 1, p, n2, B);
+        double sum = 0;
+        for (int j = 0; j < n2; j++)
+            sum += tmp[j + n2 * k] * TB[j];
+        t[k] = sum;
     }
 
-    //  fourft (values1, n3, 0);
-    result = fourev(values1, n3, phi);
-
-    free_dvector(p, 0, N);
-    free_dvector(values1, 0, N);
-    free_dmatrix(values2, 0, N, 0, N);
+    /* Contract the k index */
+    double result = 0;
+    for (int k = 0; k < n3; k++)
+        result += t[k] * E[k];
 
     return result;
-    //  */
-    //  return 0.;
 }
 
 // --------------------------------------------------------------------------*/
