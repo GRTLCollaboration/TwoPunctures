@@ -27,7 +27,6 @@ static inline double min(double const x, double const y)
 int TwoPunctures::Index(int ivar, int i, int j, int k, int nvar, int n1, int n2,
                         int n3) const
 {
-    TP_TIME("TP::TwoPunctures::Index");
     int i1 = i, j1 = j, k1 = k;
 
     if (i1 < 0)

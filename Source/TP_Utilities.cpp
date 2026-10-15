@@ -31,7 +31,6 @@ int *ivector(long nl, long nh)
 double *dvector(long nl, long nh)
 /* allocate a double vector with subscript range v[nl..nh] */
 {
-    TP_TIME("TP::Utilities::dvector");
     double *retval;
 
     retval = new double[(nh - nl + 1)];
@@ -164,7 +163,6 @@ void free_ivector(int *v, long nl, long nh)
 void free_dvector(double *v, long nl, long nh)
 /* free an double vector allocated with dvector() */
 {
-    TP_TIME("TP::Utilities::free_dvector");
     delete[](v + nl);
 }
 
@@ -361,7 +359,6 @@ void chder(double *c, double *cder, int n)
 double chebev(double a, double b, double c[], int m, double x)
 /* eq. 5.8.11 of C++ NR (2nd ed) */
 {
-    TP_TIME("TP::Utilities::chebev");
     int j;
     double djp2, djp1, dj; /* d_{j+2}, d_{j+1} and d_j */
     double y;
@@ -484,7 +481,6 @@ void fourder2(double u[], double d2u[], int N)
 /* ----------------------------------------- */
 double fourev(double *u, int N, double x)
 {
-    TP_TIME("TP::Utilities::fourev");
     int l, M = N / 2;
     double xl, result;
 
