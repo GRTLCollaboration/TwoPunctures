@@ -24,6 +24,7 @@ void TwoPunctures::AB_To_XR(int nvar, double A, double B, double *X, double *R,
 /*                          U.d11[]=U[]_XX; U.d12[]=U[]_XR; U.d13[]=U[]_X3; */
 /*                          U.d22[]=U[]_RR; U.d23[]=U[]_R3; U.d33[]=U[]_33; */
 {
+    TP_TIME("TP::TwoPunctures::AB_To_XR");
 
     double At = 0.5 * (A + 1), A_X, A_XX, B_R, B_RR;
     int ivar;
@@ -58,6 +59,7 @@ void TwoPunctures::C_To_c(int nvar, double X, double R, double *x, double *r,
 /*                          U.d11[]=U[]_xx; U.d12[]=U[]_xr; U.d13[]=U[]_x3; */
 /*                          U.d22[]=U[]_rr; U.d23[]=U[]_r3; U.d33[]=U[]_33; */
 {
+    TP_TIME("TP::TwoPunctures::C_To_c");
 
     double C_c2, U_cb, U_CB;
     gsl_complex C, C_c, C_cc, c, c_C, c_CC, U_c, U_cc, U_C, U_CC;
@@ -124,6 +126,7 @@ void TwoPunctures::rx3_To_xyz(int nvar, double x, double r, double phi,
 /*                          U.d11[]=U[]_xx; U.d12[]=U[]_xy; U.d1z[]=U[]_xz; */
 /*                          U.d22[]=U[]_yy; U.d2z[]=U[]_yz; U.dzz[]=U[]_zz; */
 {
+    TP_TIME("TP::TwoPunctures::rx3_To_xyz");
     int jvar;
     double sin_phi = sin(phi), cos_phi = cos(phi), sin2_phi = sin_phi * sin_phi,
            cos2_phi = cos_phi * cos_phi, sin_2phi = 2 * sin_phi * cos_phi,

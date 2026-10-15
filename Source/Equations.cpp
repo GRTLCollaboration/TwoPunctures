@@ -24,6 +24,7 @@ using namespace Utilities;
 
 double TwoPunctures::BY_KKofxyz(double x, double y, double z)
 {
+    TP_TIME("TP::TwoPunctures::BY_KKofxyz");
 
     int i, j;
     double r_plus, r2_plus, r3_plus, r_minus, r2_minus, r3_minus, np_Pp, nm_Pm,
@@ -88,6 +89,7 @@ double TwoPunctures::BY_KKofxyz(double x, double y, double z)
 void TwoPunctures::BY_Aijofxyz(double x, double y, double z,
                                double Aij[3][3]) const
 {
+    TP_TIME("TP::TwoPunctures::BY_Aijofxyz");
 
     int i, j;
     double r_plus, r2_plus, r3_plus, r_minus, r2_minus, r3_minus, np_Pp, nm_Pm,
@@ -158,6 +160,7 @@ void TwoPunctures::NonLinEquations(double rho_adm, double A, double B, double X,
                                    double R, double x, double r, double phi,
                                    double y, double z, derivs U, double *values)
 {
+    TP_TIME("TP::TwoPunctures::NonLinEquations");
 
     double r_plus, r_minus, psi, psi2, psi4, psi7;
     double mu;
@@ -183,6 +186,7 @@ void TwoPunctures::LinEquations(double A, double B, double X, double R,
                                 double x, double r, double phi, double y,
                                 double z, derivs dU, derivs U, double *values)
 {
+    TP_TIME("TP::TwoPunctures::LinEquations");
 
     double r_plus, r_minus, psi, psi2, psi4, psi8;
 

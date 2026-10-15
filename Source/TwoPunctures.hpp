@@ -10,14 +10,24 @@
 
 #ifdef USE_CHOMBO
 // Chombo includes
+#include "CH_Timer.H"
 #include "MayDay.H"
 #include "SPMD.H"
 #include "parstream.H"
 #elif defined(USE_AMREX)
 // AMReX includes
 #include "AMReX.H"
+#include "AMReX_BLProfiler.H"
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_Print.H"
+#endif
+
+/* Profiling/timer macros: use Chombo's CH_TIMER when built against
+   Chombo, and AMReX's BL_PROFILE when built against AMReX. */
+#ifdef USE_CHOMBO
+#define TP_TIME(name) CH_TIME(name)
+#elif defined(USE_AMREX)
+#define TP_TIME(name) BL_PROFILE(name)
 #endif
 
 // Our includes

@@ -4,6 +4,7 @@ namespace TP
 {
 Parameters::Parameters()
 {
+    TP_TIME("TP::Parameters::Parameters");
     // set all the parameters
     verbose = false;
     keep_u_around = false;

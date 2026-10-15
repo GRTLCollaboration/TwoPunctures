@@ -17,6 +17,7 @@ namespace Utilities
 int *ivector(long nl, long nh)
 /* allocate an int vector with subscript range v[nl..nh] */
 {
+    TP_TIME("TP::Utilities::ivector");
     int *retval;
 
     retval = new int[(nh - nl + 1)];
@@ -30,6 +31,7 @@ int *ivector(long nl, long nh)
 double *dvector(long nl, long nh)
 /* allocate a double vector with subscript range v[nl..nh] */
 {
+    TP_TIME("TP::Utilities::dvector");
     double *retval;
 
     retval = new double[(nh - nl + 1)];
@@ -43,6 +45,7 @@ double *dvector(long nl, long nh)
 int **imatrix(long nrl, long nrh, long ncl, long nch)
 /* allocate a int matrix with subscript range m[nrl..nrh][ncl..nch] */
 {
+    TP_TIME("TP::Utilities::imatrix");
     int **retval;
 
     retval = new int *[(nrh - nrl + 1)];
@@ -71,6 +74,7 @@ int **imatrix(long nrl, long nrh, long ncl, long nch)
 double **dmatrix(long nrl, long nrh, long ncl, long nch)
 /* allocate a double matrix with subscript range m[nrl..nrh][ncl..nch] */
 {
+    TP_TIME("TP::Utilities::dmatrix");
     double **retval;
 
     retval = new double *[(nrh - nrl + 1)];
@@ -99,6 +103,7 @@ double **dmatrix(long nrl, long nrh, long ncl, long nch)
 double ***d3tensor(long nrl, long nrh, long ncl, long nch, long ndl, long ndh)
 /* allocate a double 3tensor with range t[nrl..nrh][ncl..nch][ndl..ndh] */
 {
+    TP_TIME("TP::Utilities::d3tensor");
     double ***retval;
 
     /* get memory for index structures */
@@ -149,16 +154,25 @@ double ***d3tensor(long nrl, long nrh, long ncl, long nch, long ndl, long ndh)
 
 /*--------------------------------------------------------------------------*/
 void free_ivector(int *v, long nl, long nh)
-/* free an int vector allocated with ivector() */ { delete[](v + nl); }
+/* free an int vector allocated with ivector() */
+{
+    TP_TIME("TP::Utilities::free_ivector");
+    delete[](v + nl);
+}
 
 /*--------------------------------------------------------------------------*/
 void free_dvector(double *v, long nl, long nh)
-/* free an double vector allocated with dvector() */ { delete[](v + nl); }
+/* free an double vector allocated with dvector() */
+{
+    TP_TIME("TP::Utilities::free_dvector");
+    delete[](v + nl);
+}
 
 /*--------------------------------------------------------------------------*/
 void free_imatrix(int **m, long nrl, long nrh, long ncl, long nch)
 /* free an int matrix allocated by imatrix() */
 {
+    TP_TIME("TP::Utilities::free_imatrix");
     delete[](m[nrl] + ncl);
     delete[](m + nrl);
 }
@@ -167,6 +181,7 @@ void free_imatrix(int **m, long nrl, long nrh, long ncl, long nch)
 void free_dmatrix(double **m, long nrl, long nrh, long ncl, long nch)
 /* free a double matrix allocated by dmatrix() */
 {
+    TP_TIME("TP::Utilities::free_dmatrix");
     delete[](m[nrl] + ncl);
     delete[](m + nrl);
 }
@@ -176,6 +191,7 @@ void free_d3tensor(double ***t, long nrl, long nrh, long ncl, long nch,
                    long ndl, long ndh)
 /* free a double d3tensor allocated by d3tensor() */
 {
+    TP_TIME("TP::Utilities::free_d3tensor");
     delete[](t[nrl][ncl] + ndl);
     delete[](t[nrl] + ncl);
     delete[](t + nrl);
@@ -184,6 +200,7 @@ void free_d3tensor(double ***t, long nrl, long nrh, long ncl, long nch,
 /*--------------------------------------------------------------------------*/
 int minimum2(int i, int j)
 {
+    TP_TIME("TP::Utilities::minimum2");
     int result = i;
     if (j < result)
         result = j;
@@ -193,6 +210,7 @@ int minimum2(int i, int j)
 /*-------------------------------------------------------------------------*/
 int minimum3(int i, int j, int k)
 {
+    TP_TIME("TP::Utilities::minimum3");
     int result = i;
     if (j < result)
         result = j;
@@ -204,6 +222,7 @@ int minimum3(int i, int j, int k)
 /*--------------------------------------------------------------------------*/
 int maximum2(int i, int j)
 {
+    TP_TIME("TP::Utilities::maximum2");
     int result = i;
     if (j > result)
         result = j;
@@ -213,6 +232,7 @@ int maximum2(int i, int j)
 /*--------------------------------------------------------------------------*/
 int maximum3(int i, int j, int k)
 {
+    TP_TIME("TP::Utilities::maximum3");
     int result = i;
     if (j > result)
         result = j;
@@ -224,6 +244,7 @@ int maximum3(int i, int j, int k)
 /*--------------------------------------------------------------------------*/
 int pow_int(int mantisse, int exponent)
 {
+    TP_TIME("TP::Utilities::pow_int");
     int i, result = 1;
 
     for (i = 1; i <= exponent; i++)
@@ -236,6 +257,7 @@ int pow_int(int mantisse, int exponent)
 void chebft_Zeros(double u[], int n, int inv)
 /* eq. 5.8.7 and 5.8.8 at x = (5.8.4) of 2nd edition C++ NR */
 {
+    TP_TIME("TP::Utilities::chebft_Zeros");
     int k, j, isignum;
     double fac, sum, Pion, *c;
 
@@ -283,6 +305,7 @@ void chebft_Zeros(double u[], int n, int inv)
 void chebft_Extremes(double u[], int n, int inv)
 /* eq. 5.8.7 and 5.8.8 at x = (5.8.5) of 2nd edition C++ NR */
 {
+    TP_TIME("TP::Utilities::chebft_Extremes");
     int k, j, isignum, N = n - 1;
     double fac, sum, PioN, *c;
 
@@ -325,6 +348,7 @@ void chebft_Extremes(double u[], int n, int inv)
 
 void chder(double *c, double *cder, int n)
 {
+    TP_TIME("TP::Utilities::chder");
     int j;
 
     cder[n] = 0.0;
@@ -337,6 +361,7 @@ void chder(double *c, double *cder, int n)
 double chebev(double a, double b, double c[], int m, double x)
 /* eq. 5.8.11 of C++ NR (2nd ed) */
 {
+    TP_TIME("TP::Utilities::chebev");
     int j;
     double djp2, djp1, dj; /* d_{j+2}, d_{j+1} and d_j */
     double y;
@@ -361,6 +386,7 @@ void fourft(double *u, int N, int inv)
 /* a (slow) Fourier transform, seems to be just eq. 12.1.6 and 12.1.9 of C++ NR
  * (2nd ed) */
 {
+    TP_TIME("TP::Utilities::fourft");
     int l, k, iy, M;
     double x, x1, fac, Pi_fac, *a, *b;
 
@@ -423,6 +449,7 @@ void fourft(double *u, int N, int inv)
 /* -----------------------------------------*/
 void fourder(double u[], double du[], int N)
 {
+    TP_TIME("TP::Utilities::fourder");
     int l, M, lpM;
 
     M = N / 2;
@@ -439,6 +466,7 @@ void fourder(double u[], double du[], int N)
 /* -----------------------------------------*/
 void fourder2(double u[], double d2u[], int N)
 {
+    TP_TIME("TP::Utilities::fourder2");
     int l, l2, M, lpM;
 
     d2u[0] = 0.;
@@ -456,6 +484,7 @@ void fourder2(double u[], double d2u[], int N)
 /* ----------------------------------------- */
 double fourev(double *u, int N, double x)
 {
+    TP_TIME("TP::Utilities::fourev");
     int l, M = N / 2;
     double xl, result;
 
@@ -471,6 +500,7 @@ double fourev(double *u, int N, double x)
 /* ------------------------------------------------------------------------*/
 double norm1(double *v, int n)
 {
+    TP_TIME("TP::Utilities::norm1");
     int i;
     double result = -1;
 
@@ -484,6 +514,7 @@ double norm1(double *v, int n)
 /* -------------------------------------------------------------------------*/
 double norm2(double *v, int n)
 {
+    TP_TIME("TP::Utilities::norm2");
     int i;
     double result = 0;
 
@@ -496,6 +527,7 @@ double norm2(double *v, int n)
 /* -------------------------------------------------------------------------*/
 double scalarproduct(double *v, double *w, int n)
 {
+    TP_TIME("TP::Utilities::scalarproduct");
     int i;
     double result = 0;
 

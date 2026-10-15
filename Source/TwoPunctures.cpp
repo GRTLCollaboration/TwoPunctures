@@ -15,6 +15,7 @@ using namespace Z4VectorShortcuts;
 
 void TwoPunctures::set_initial_guess(derivs v)
 {
+    TP_TIME("TP::TwoPunctures::set_initial_guess");
     int nvar = 1;
 
     double *s_x, *s_y, *s_z;
@@ -181,6 +182,7 @@ void TwoPunctures::set_initial_guess(derivs v)
 /* -------------------------------------------------------------------*/
 void TwoPunctures::Run()
 {
+    TP_TIME("TP::TwoPunctures::Run");
 
     nvar = 1;
     n1 = npoints_A;
@@ -422,6 +424,7 @@ void TwoPunctures::Run()
  **/
 void TwoPunctures::Interpolate(const double *pos, double *Q) const
 {
+    TP_TIME("TP::TwoPunctures::Interpolate");
     // First, zero everything
     // @TODO: it should be checked if this represents Vaccuum
     for (int i = 0; i < Qlen; i++)

@@ -22,6 +22,7 @@ const int Step_Relax = 1;
 double TwoPunctures::norm_inf(double const *TP_RESTRICT const F,
                               int const ntotal)
 {
+    TP_TIME("TP::TwoPunctures::norm_inf");
     double dmax = -1;
 #pragma omp parallel
     {
@@ -44,6 +45,7 @@ void TwoPunctures::resid(double *TP_RESTRICT const res, int const ntotal,
                          int const *TP_RESTRICT const *TP_RESTRICT const cols,
                          double const *TP_RESTRICT const *TP_RESTRICT const JFD)
 {
+    TP_TIME("TP::TwoPunctures::resid");
 #pragma omp parallel for
     for (int i = 0; i < ntotal; i++)
     {
@@ -62,6 +64,7 @@ void TwoPunctures::LineRelax_al(
     int const *TP_RESTRICT const *TP_RESTRICT const cols,
     double const *TP_RESTRICT const *TP_RESTRICT const JFD)
 {
+    TP_TIME("TP::TwoPunctures::LineRelax_al");
     int i, m, Ic, Ip, Im, col, ivar;
 
     gsl_vector *diag = gsl_vector_alloc(n1);
@@ -120,6 +123,7 @@ void TwoPunctures::LineRelax_be(
     int const *TP_RESTRICT const *TP_RESTRICT const cols,
     double const *TP_RESTRICT const *TP_RESTRICT const JFD)
 {
+    TP_TIME("TP::TwoPunctures::LineRelax_be");
     int j, m, Ic, Ip, Im, col, ivar;
 
     gsl_vector *diag = gsl_vector_alloc(n2);
@@ -177,6 +181,7 @@ void TwoPunctures::relax(double *TP_RESTRICT const dv, int const nvar,
                          int const *TP_RESTRICT const *TP_RESTRICT const cols,
                          double const *TP_RESTRICT const *TP_RESTRICT const JFD)
 {
+    TP_TIME("TP::TwoPunctures::relax");
     int i, j, k, n;
 
     for (k = 0; k < n3; k = k + 2)
@@ -221,6 +226,7 @@ void TwoPunctures::relax(double *TP_RESTRICT const dv, int const nvar,
 void TwoPunctures::TestRelax(int nvar, int n1, int n2, int n3, derivs v,
                              double *dv)
 {
+    TP_TIME("TP::TwoPunctures::TestRelax");
 
     int ntotal = n1 * n2 * n3 * nvar, **cols, *ncols,
         maxcol = StencilSize * nvar, j;
@@ -274,6 +280,7 @@ int TwoPunctures::bicgstab(int const nvar, int const n1, int const n2,
                            int const itmax, double const tol,
                            double *TP_RESTRICT const normres)
 {
+    TP_TIME("TP::TwoPunctures::bicgstab");
 
     int ntotal = n1 * n2 * n3 * nvar, ii;
     double alpha = 0, beta = 0;
@@ -453,6 +460,7 @@ void TwoPunctures::Newton(int const nvar, int const n1, int const n2,
                           int const n3, derivs v, double const tol,
                           int const itmax)
 {
+    TP_TIME("TP::TwoPunctures::Newton");
 
     int ntotal = n1 * n2 * n3 * nvar, ii, it;
     double *F, dmax, normres;

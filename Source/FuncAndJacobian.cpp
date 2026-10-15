@@ -27,6 +27,7 @@ static inline double min(double const x, double const y)
 int TwoPunctures::Index(int ivar, int i, int j, int k, int nvar, int n1, int n2,
                         int n3) const
 {
+    TP_TIME("TP::TwoPunctures::Index");
     int i1 = i, j1 = j, k1 = k;
 
     if (i1 < 0)
@@ -50,6 +51,7 @@ int TwoPunctures::Index(int ivar, int i, int j, int k, int nvar, int n1, int n2,
 /* --------------------------------------------------------------------------*/
 void TwoPunctures::allocate_derivs(derivs *v, int n) const
 {
+    TP_TIME("TP::TwoPunctures::allocate_derivs");
     int m = n - 1;
     (*v).d0 = dvector(0, m);
     (*v).d1 = dvector(0, m);
@@ -66,6 +68,7 @@ void TwoPunctures::allocate_derivs(derivs *v, int n) const
 /* --------------------------------------------------------------------------*/
 void TwoPunctures::free_derivs(derivs *v, int n) const
 {
+    TP_TIME("TP::TwoPunctures::free_derivs");
     int m = n - 1;
     free_dvector((*v).d0, 0, m);
     free_dvector((*v).d1, 0, m);
@@ -82,6 +85,7 @@ void TwoPunctures::free_derivs(derivs *v, int n) const
 /* --------------------------------------------------------------------------*/
 void TwoPunctures::Derivatives_AB3(int nvar, int n1, int n2, int n3, derivs v)
 {
+    TP_TIME("TP::TwoPunctures::Derivatives_AB3");
     int i, j, k, ivar, N, *indx;
     double *p, *dp, *d2p, *q, *dq, *r, *dr;
 
@@ -190,6 +194,7 @@ void TwoPunctures::Derivatives_AB3(int nvar, int n1, int n2, int n3, derivs v)
 void TwoPunctures::F_of_v(int nvar, int n1, int n2, int n3, derivs v, double *F,
                           derivs u)
 {
+    TP_TIME("TP::TwoPunctures::F_of_v");
     /*      Calculates the left hand sides of the non-linear equations
      * F_m(v_n)=0*/
     /*      and the function u (u.d0[]) as well as its derivatives*/
@@ -379,6 +384,8 @@ void TwoPunctures::J_times_dv(int nvar, int n1, int n2, int n3, derivs dv,
      * u.d23[], u.d33[])*/
     /*      at interior points and at the boundaries "+/-"*/
 
+    TP_TIME("TP::TwoPunctures::J_times_dv");
+
     int i, j, k, ivar, indx;
     double al, be, A, B, X, R, x, r, phi, y, z, Am1, *values;
     derivs dU, U;
@@ -460,6 +467,7 @@ void TwoPunctures::J_times_dv(int nvar, int n1, int n2, int n3, derivs dv,
 void TwoPunctures::JFD_times_dv(int i, int j, int k, int nvar, int n1, int n2,
                                 int n3, derivs dv, derivs u, double *values)
 { /* Calculates rows of the vector 'J(FD)*dv'.*/
+    TP_TIME("TP::TwoPunctures::JFD_times_dv");
     /* First row to be calculated: row = Index(0,      i, j, k; nvar, n1, n2,
      * n3)*/
     /* Last  row to be calculated: row = Index(nvar-1, i, j, k; nvar, n1, n2,
@@ -602,6 +610,7 @@ void TwoPunctures::JFD_times_dv(int i, int j, int k, int nvar, int n1, int n2,
 void TwoPunctures::SetMatrix_JFD(int nvar, int n1, int n2, int n3, derivs u,
                                  int *ncols, int **cols, double **Matrix)
 {
+    TP_TIME("TP::TwoPunctures::SetMatrix_JFD");
 
     int column, row, mcol;
     int i, i1, i_0, i_1, j, j1, j_0, j_1, k, k1, k_0, k_1, N1, N2, N3, ivar,
@@ -695,6 +704,7 @@ double TwoPunctures::PunctEvalAtArbitPosition(double *v, int ivar, double A,
                                               double B, double phi, int nvar,
                                               int n1, int n2, int n3)
 {
+    TP_TIME("TP::TwoPunctures::PunctEvalAtArbitPosition");
     int i, j, k, N;
     double *p, *values1, **values2, result;
 
@@ -737,6 +747,7 @@ void TwoPunctures::calculate_derivs(int i, int j, int k, int ivar, int nvar,
                                     int n1, int n2, int n3, derivs v,
                                     derivs vv) const
 {
+    TP_TIME("TP::TwoPunctures::calculate_derivs");
     double al = Pih * (2 * i + 1) / n1, be = Pih * (2 * j + 1) / n2,
            sin_al = sin(al), sin2_al = sin_al * sin_al, cos_al = cos(al),
            sin_be = sin(be), sin2_be = sin_be * sin_be, cos_be = cos(be);
@@ -758,6 +769,7 @@ void TwoPunctures::calculate_derivs(int i, int j, int k, int ivar, int nvar,
 /* --------------------------------------------------------------------------*/
 double TwoPunctures::interpol(double a, double b, double c, derivs v) const
 {
+    TP_TIME("TP::TwoPunctures::interpol");
     return v.d0[0] + a * v.d1[0] + b * v.d2[0] + c * v.d3[0] +
            0.5 * a * a * v.d11[0] + a * b * v.d12[0] + a * c * v.d13[0] +
            0.5 * b * b * v.d22[0] + b * c * v.d23[0] + 0.5 * c * c * v.d33[0];
@@ -770,6 +782,7 @@ double TwoPunctures::PunctTaylorExpandAtArbitPosition(int ivar, int nvar,
                                                       derivs v, double x,
                                                       double y, double z) const
 {
+    TP_TIME("TP::TwoPunctures::PunctTaylorExpandAtArbitPosition");
 
     double xs, ys, zs, rs2, phi, X, R, A, B, al, be, aux1, aux2, a, b, c,
         result, Ui;
@@ -820,6 +833,7 @@ double TwoPunctures::PunctIntPolAtArbitPosition(int ivar, int nvar, int n1,
                                                 int n2, int n3, derivs v,
                                                 double x, double y, double z)
 {
+    TP_TIME("TP::TwoPunctures::PunctIntPolAtArbitPosition");
 
     double xs, ys, zs, rs2, phi, X, R, A, B, aux1, aux2, result, Ui;
 
@@ -859,6 +873,7 @@ double TwoPunctures::PunctEvalAtArbitPositionFast(double *v, int ivar, double A,
                                                   int nvar, int n1, int n2,
                                                   int n3) const
 {
+    TP_TIME("TP::TwoPunctures::PunctEvalAtArbitPositionFast");
     int i, j, k, N;
     double *p, *values1, **values2, result;
     // VASILIS: Nothing should be changed in this routine. This is used by
@@ -910,6 +925,7 @@ double TwoPunctures::PunctIntPolAtArbitPositionFast(int ivar, int nvar, int n1,
                                                     double x, double y,
                                                     double z) const
 {
+    TP_TIME("TP::TwoPunctures::PunctIntPolAtArbitPositionFast");
 
     double xs, ys, zs, rs2, phi, X, R, A, B, aux1, aux2, result, Ui;
     // VASILIS: Here the struct derivs v refers to the spectral coeffiecients of
@@ -945,6 +961,7 @@ double TwoPunctures::PunctIntPolAtArbitPositionFast(int ivar, int nvar, int n1,
 void TwoPunctures::SpecCoef(int n1, int n2, int n3, int ivar, double *v,
                             double *cf)
 {
+    TP_TIME("TP::TwoPunctures::SpecCoef");
 
     // VASILIS: Here v is a pointer to the values of the variable v at the
     // collocation points and cf_v a pointer to the spectral coefficients that
