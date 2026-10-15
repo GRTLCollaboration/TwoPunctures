@@ -30,6 +30,28 @@
 #define TP_TIME(name) BL_PROFILE(name)
 #endif
 
+/* The OpenMP parallel regions in the Newton solver (relax, LineRelax_*,
+   resid, ...) have very small iteration counts (the loops run over ~n1/2
+   or ~n2/2 points with n1 = n2 = npoints_A/B, typically 30) and each
+   iteration allocates and frees several GSL vectors. At these problem
+   sizes the OpenMP fork-join overhead and memory-allocation contention
+   make the solver dramatically slower than serial execution. By default
+   we therefore disable OpenMP in the solver; define TP_OMP_SOLVER when
+   building if you want the (experimental) parallel solver back. */
+#if defined(_OPENMP) && defined(TP_OMP_SOLVER)
+#define TP_OMP_SOLVER_PARALLEL _Pragma("omp parallel")
+#define TP_OMP_SOLVER_PARALLEL_FOR _Pragma("omp parallel for")
+#define TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC _Pragma("omp parallel for schedule(dynamic)")
+#define TP_OMP_SOLVER_FOR _Pragma("omp for")
+#define TP_OMP_SOLVER_CRITICAL _Pragma("omp critical")
+#else
+#define TP_OMP_SOLVER_PARALLEL
+#define TP_OMP_SOLVER_PARALLEL_FOR
+#define TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC
+#define TP_OMP_SOLVER_FOR
+#define TP_OMP_SOLVER_CRITICAL
+#endif
+
 // Our includes
 #include "TP_ConservedVectorNames.hpp"
 #include "TP_Parameters.hpp"

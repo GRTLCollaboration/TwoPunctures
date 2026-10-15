@@ -22,18 +22,23 @@ const int Step_Relax = 1;
 double TwoPunctures::norm_inf(double const *TP_RESTRICT const F,
                               int const ntotal)
 {
-    TP_TIME("TP::TwoPunctures::norm_inf");
     double dmax = -1;
-#pragma omp parallel
+    TP_OMP_SOLVER_PARALLEL
     {
         double dmax1 = -1;
-#pragma omp for
+        TP_OMP_SOLVER_FOR
         for (int j = 0; j < ntotal; j++)
+        {
             if (fabs(F[j]) > dmax1)
+            {
                 dmax1 = fabs(F[j]);
-#pragma omp critical
+            }
+        }
+        TP_OMP_SOLVER_CRITICAL
         if (dmax1 > dmax)
+        {
             dmax = dmax1;
+        }
     }
     return dmax;
 }
@@ -45,8 +50,7 @@ void TwoPunctures::resid(double *TP_RESTRICT const res, int const ntotal,
                          int const *TP_RESTRICT const *TP_RESTRICT const cols,
                          double const *TP_RESTRICT const *TP_RESTRICT const JFD)
 {
-    TP_TIME("TP::TwoPunctures::resid");
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
     for (int i = 0; i < ntotal; i++)
     {
         double JFDdv_i = 0;
@@ -64,7 +68,6 @@ void TwoPunctures::LineRelax_al(
     int const *TP_RESTRICT const *TP_RESTRICT const cols,
     double const *TP_RESTRICT const *TP_RESTRICT const JFD)
 {
-    TP_TIME("TP::TwoPunctures::LineRelax_al");
     int i, m, Ic, Ip, Im, col, ivar;
 
     gsl_vector *diag = gsl_vector_alloc(n1);
@@ -123,7 +126,6 @@ void TwoPunctures::LineRelax_be(
     int const *TP_RESTRICT const *TP_RESTRICT const cols,
     double const *TP_RESTRICT const *TP_RESTRICT const JFD)
 {
-    TP_TIME("TP::TwoPunctures::LineRelax_be");
     int j, m, Ic, Ip, Im, col, ivar;
 
     gsl_vector *diag = gsl_vector_alloc(n2);
@@ -181,23 +183,22 @@ void TwoPunctures::relax(double *TP_RESTRICT const dv, int const nvar,
                          int const *TP_RESTRICT const *TP_RESTRICT const cols,
                          double const *TP_RESTRICT const *TP_RESTRICT const JFD)
 {
-    TP_TIME("TP::TwoPunctures::relax");
     int i, j, k, n;
 
     for (k = 0; k < n3; k = k + 2)
     {
         for (n = 0; n < N_PlaneRelax; n++)
         {
-#pragma omp parallel for schedule(dynamic)
+TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC
             for (i = 2; i < n1; i = i + 2)
                 LineRelax_be(dv, i, k, nvar, n1, n2, n3, rhs, ncols, cols, JFD);
-#pragma omp parallel for schedule(dynamic)
+TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC
             for (i = 1; i < n1; i = i + 2)
                 LineRelax_be(dv, i, k, nvar, n1, n2, n3, rhs, ncols, cols, JFD);
-#pragma omp parallel for schedule(dynamic)
+TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC
             for (j = 1; j < n2; j = j + 2)
                 LineRelax_al(dv, j, k, nvar, n1, n2, n3, rhs, ncols, cols, JFD);
-#pragma omp parallel for schedule(dynamic)
+TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC
             for (j = 0; j < n2; j = j + 2)
                 LineRelax_al(dv, j, k, nvar, n1, n2, n3, rhs, ncols, cols, JFD);
         }
@@ -206,16 +207,16 @@ void TwoPunctures::relax(double *TP_RESTRICT const dv, int const nvar,
     {
         for (n = 0; n < N_PlaneRelax; n++)
         {
-#pragma omp parallel for schedule(dynamic)
+TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC
             for (i = 0; i < n1; i = i + 2)
                 LineRelax_be(dv, i, k, nvar, n1, n2, n3, rhs, ncols, cols, JFD);
-#pragma omp parallel for schedule(dynamic)
+TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC
             for (i = 1; i < n1; i = i + 2)
                 LineRelax_be(dv, i, k, nvar, n1, n2, n3, rhs, ncols, cols, JFD);
-#pragma omp parallel for schedule(dynamic)
+TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC
             for (j = 1; j < n2; j = j + 2)
                 LineRelax_al(dv, j, k, nvar, n1, n2, n3, rhs, ncols, cols, JFD);
-#pragma omp parallel for schedule(dynamic)
+TP_OMP_SOLVER_PARALLEL_FOR_DYNAMIC
             for (j = 0; j < n2; j = j + 2)
                 LineRelax_al(dv, j, k, nvar, n1, n2, n3, rhs, ncols, cols, JFD);
         }
@@ -280,7 +281,6 @@ int TwoPunctures::bicgstab(int const nvar, int const n1, int const n2,
                            int const itmax, double const tol,
                            double *TP_RESTRICT const normres)
 {
-    TP_TIME("TP::TwoPunctures::bicgstab");
 
     int ntotal = n1 * n2 * n3 * nvar, ii;
     double alpha = 0, beta = 0;
@@ -323,7 +323,7 @@ int TwoPunctures::bicgstab(int const nvar, int const n1, int const n2,
 
     /* compute initial residual rt = r = F - J*dv */
     J_times_dv(nvar, n1, n2, n3, dv, r, u);
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
     for (int j = 0; j < ntotal; j++)
         rt[j] = r[j] = F[j] - r[j];
 
@@ -347,20 +347,20 @@ int TwoPunctures::bicgstab(int const nvar, int const n1, int const n2,
         /* compute direction vector p */
         if (ii == 0)
         {
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
             for (int j = 0; j < ntotal; j++)
                 p[j] = r[j];
         }
         else
         {
             beta = (rho / rho1) * (alpha / omega);
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
             for (int j = 0; j < ntotal; j++)
                 p[j] = r[j] + beta * (p[j] - omega * vv[j]);
         }
 
         /* compute direction adjusting vector ph and scalar alpha */
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
         for (int j = 0; j < ntotal; j++)
             ph.d0[j] = 0;
         for (int j = 0; j < NRELAX; j++) /* solves JFD*ph = p by relaxation*/
@@ -368,7 +368,7 @@ int TwoPunctures::bicgstab(int const nvar, int const n1, int const n2,
 
         J_times_dv(nvar, n1, n2, n3, ph, vv, u); /* vv=J*ph*/
         alpha = rho / scalarproduct(rt, vv, ntotal);
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
         for (int j = 0; j < ntotal; j++)
             s[j] = r[j] - alpha * vv[j];
 
@@ -376,7 +376,7 @@ int TwoPunctures::bicgstab(int const nvar, int const n1, int const n2,
         *normres = norm2(s, ntotal);
         if (*normres <= tol)
         {
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
             for (int j = 0; j < ntotal; j++)
                 dv.d0[j] += alpha * ph.d0[j];
             if (output == 1)
@@ -390,7 +390,7 @@ int TwoPunctures::bicgstab(int const nvar, int const n1, int const n2,
         }
 
         /* compute stabilizer vector sh and scalar omega */
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
         for (int j = 0; j < ntotal; j++)
             sh.d0[j] = 0;
         for (int j = 0; j < NRELAX; j++) /* solves JFD*sh = s by relaxation*/
@@ -400,7 +400,7 @@ int TwoPunctures::bicgstab(int const nvar, int const n1, int const n2,
         omega = scalarproduct(t, s, ntotal) / scalarproduct(t, t, ntotal);
 
         /* compute new solution approximation */
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
         for (int j = 0; j < ntotal; j++)
         {
             dv.d0[j] += alpha * ph.d0[j] + omega * sh.d0[j];
@@ -480,7 +480,7 @@ void TwoPunctures::Newton(int const nvar, int const n1, int const n2,
             F_of_v(nvar, n1, n2, n3, v, F, u);
             dmax = norm_inf(F, ntotal);
         }
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
         for (int j = 0; j < ntotal; j++)
             dv.d0[j] = 0;
 
@@ -494,7 +494,7 @@ void TwoPunctures::Newton(int const nvar, int const n1, int const n2,
         fflush(stdout);
         ii = bicgstab(nvar, n1, n2, n3, v, dv, verbose, 100, dmax * 1.e-3,
                       &normres);
-#pragma omp parallel for
+TP_OMP_SOLVER_PARALLEL_FOR
         for (int j = 0; j < ntotal; j++)
             v.d0[j] -= dv.d0[j];
         F_of_v(nvar, n1, n2, n3, v, F, u);

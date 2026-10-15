@@ -51,7 +51,6 @@ int TwoPunctures::Index(int ivar, int i, int j, int k, int nvar, int n1, int n2,
 /* --------------------------------------------------------------------------*/
 void TwoPunctures::allocate_derivs(derivs *v, int n) const
 {
-    TP_TIME("TP::TwoPunctures::allocate_derivs");
     int m = n - 1;
     (*v).d0 = dvector(0, m);
     (*v).d1 = dvector(0, m);
@@ -68,7 +67,6 @@ void TwoPunctures::allocate_derivs(derivs *v, int n) const
 /* --------------------------------------------------------------------------*/
 void TwoPunctures::free_derivs(derivs *v, int n) const
 {
-    TP_TIME("TP::TwoPunctures::free_derivs");
     int m = n - 1;
     free_dvector((*v).d0, 0, m);
     free_dvector((*v).d1, 0, m);
@@ -392,9 +390,11 @@ void TwoPunctures::J_times_dv(int nvar, int n1, int n2, int n3, derivs dv,
 
     Derivatives_AB3(nvar, n1, n2, n3, dv);
 
+#if defined(_OPENMP) && defined(TP_OMP_SOLVER)
 #pragma omp parallel for private(values, dU, U, i, j, k, al, A, be, B, phi, X, \
                                  R, x, r, y, z, Am1, ivar, indx)               \
     schedule(dynamic)
+#endif
     for (i = 0; i < n1; i++)
     {
         values = dvector(0, nvar - 1);
@@ -467,7 +467,6 @@ void TwoPunctures::J_times_dv(int nvar, int n1, int n2, int n3, derivs dv,
 void TwoPunctures::JFD_times_dv(int i, int j, int k, int nvar, int n1, int n2,
                                 int n3, derivs dv, derivs u, double *values)
 { /* Calculates rows of the vector 'J(FD)*dv'.*/
-    TP_TIME("TP::TwoPunctures::JFD_times_dv");
     /* First row to be calculated: row = Index(0,      i, j, k; nvar, n1, n2,
      * n3)*/
     /* Last  row to be calculated: row = Index(nvar-1, i, j, k; nvar, n1, n2,
@@ -625,7 +624,9 @@ void TwoPunctures::SetMatrix_JFD(int nvar, int n1, int n2, int n3, derivs u,
     N2 = n2 - 1;
     N3 = n3 - 1;
 
+#if defined(_OPENMP) && defined(TP_OMP_SOLVER)
 #pragma omp parallel for private(i, j, k, ivar, row) schedule(dynamic)
+#endif
     for (i = 0; i < n1; i++)
     {
         for (j = 0; j < n2; j++)
@@ -747,7 +748,6 @@ void TwoPunctures::calculate_derivs(int i, int j, int k, int ivar, int nvar,
                                     int n1, int n2, int n3, derivs v,
                                     derivs vv) const
 {
-    TP_TIME("TP::TwoPunctures::calculate_derivs");
     double al = Pih * (2 * i + 1) / n1, be = Pih * (2 * j + 1) / n2,
            sin_al = sin(al), sin2_al = sin_al * sin_al, cos_al = cos(al),
            sin_be = sin(be), sin2_be = sin_be * sin_be, cos_be = cos(be);
@@ -769,7 +769,6 @@ void TwoPunctures::calculate_derivs(int i, int j, int k, int ivar, int nvar,
 /* --------------------------------------------------------------------------*/
 double TwoPunctures::interpol(double a, double b, double c, derivs v) const
 {
-    TP_TIME("TP::TwoPunctures::interpol");
     return v.d0[0] + a * v.d1[0] + b * v.d2[0] + c * v.d3[0] +
            0.5 * a * a * v.d11[0] + a * b * v.d12[0] + a * c * v.d13[0] +
            0.5 * b * b * v.d22[0] + b * c * v.d23[0] + 0.5 * c * c * v.d33[0];
@@ -782,7 +781,6 @@ double TwoPunctures::PunctTaylorExpandAtArbitPosition(int ivar, int nvar,
                                                       derivs v, double x,
                                                       double y, double z) const
 {
-    TP_TIME("TP::TwoPunctures::PunctTaylorExpandAtArbitPosition");
 
     double xs, ys, zs, rs2, phi, X, R, A, B, al, be, aux1, aux2, a, b, c,
         result, Ui;
